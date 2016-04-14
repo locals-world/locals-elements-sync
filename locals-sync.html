@@ -10,21 +10,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../polymer/polymer.html">
 
+<script type="text/javascript" src="bower_components/jsencrypt/bin/jsencrypt.js"></script>
+<script type="text/javascript" src="bower_components/crypto-js/build/rollups/aes.js"></script>
+
 <!--
-An element providing a solution to no problem in particular.
+Sync localstorage keys from one device to another using assymetric encryption (RSA)
 
 Example:
 
-    <locals-sync></locals-sync>
+    <locals-sync mode='master' keys='a,b,c'></locals-sync>
 
-Example:
-
-    <locals-sync>
-      <h2>Hello locals-sync</h2>
-    </locals-sync>
+    <locals-sync mode='slave'></locals-sync>
 
 @demo demo/index.html
-@hero hero.svg
+
 -->
 
 <dom-module id="locals-sync">

@@ -9,13 +9,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-button/paper-button.html">
 
 <script type="text/javascript" src="bower_components/jsencrypt/bin/jsencrypt.js"></script>
 <script type="text/javascript" src="bower_components/crypto-js/build/rollups/aes.js"></script>
 
+
 <!--
 Sync localstorage keys from one device to another using assymetric encryption (RSA)
-
+Using whisper (ethereum.org) and IPFS (ipfs.org)
 Example:
 
     <locals-sync mode='master' keys='a,b,c'></locals-sync>
@@ -28,6 +31,7 @@ Example:
 
 <dom-module id="locals-sync">
   <template>
+
     <style>
       :host {
         display: block;
@@ -43,9 +47,15 @@ Example:
       }
     </style>
 
-    <h1>Hiiiiieeeeee zen de manne se</h1>
-    <content></content>
-    
+  <template is="dom-if" if="{{master}}">
+    <h1>Master</h1>
+  </template>
+  <template is="dom-if" if="{{slave}}">
+    <h1>Slave</h1>
+      <p>Check the other device for the secret</p>
+      <paper-input label="Secret" bind-value="{{incomingsecret}}"></paper-input>
+      <paper-button raised on-tap="requestsync">Request sync</paper-button>
+  </template>    
   </template>
 
   <script>
@@ -55,16 +65,44 @@ Example:
       properties: {
         /**
          * mode indicates the master/client role, possible values : 'master' 'slave' */
-        mode: {
-          type:String,
-          value: 'master'
+        master: {
+          type:Boolean
+        },
+        slave: {
+          type:Boolean
         },
       },
 
       // Element Lifecycle
 
       ready: function() {
-      
+        // slave init
+        this.incomingsecret = this.generateCode();
+        this.crypt = new JSEncrypt({default_key_size: 512});
+        this.pubkey = this.crypt.getPublicKey();
+        this.privkey = this.crypt.getPrivateKey();
+
+        //master init
+
+      },
+
+      generateCode : function(){
+        return (Math.floor(Math.random() * (999999 - 99999)) + 99999).toString();
+      },
+
+
+      /** Master helpers **/
+      requestsync: function() {
+
+        var whisper = document.querySelector('web3-whisper');
+
+        whisper.whisperpost(this.incomingsecret, JSON.stringify({
+          'command': 'sync',
+          'data': {
+            'channel': this.channel,
+            'publickey': this.pubkey
+          }
+        }));
       },
 
       attached: function() {
@@ -73,6 +111,11 @@ Example:
 
       detached: function() {
        
+      },
+
+      isMaster: function(){
+        console.log('isMaster called',this.mode);
+        return this.mode == 'master';
       },
 
       // Element Behavior

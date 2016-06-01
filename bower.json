@@ -20,7 +20,10 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^1.2.0",
     "jsencrypt": "jsencrypt#^2.2.0",
-    "crypto-js": "CryptoJS#^3.1.12"
+    "crypto-js": "CryptoJS#^3.1.12",
+    "web3-wallet": "^0.0.5",
+    "paper-button": "^1.0.11",
+    "paper-input": "^1.1.10"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0"
